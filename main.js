@@ -161,24 +161,40 @@ function moveCamera(){
     const height = Math.max( body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight );
     const length = height - window.innerHeight;
     const scrollPercents = scroll / length;
-    let currentCurveIndex = 0;
-    let reminder = scrollPercents * positionCurvesLength;
-    let curvePercents = 0;
+    let currentPositionCurveIndex = 0;
+    let currentTargetCurveIndex = 0;
+    let positionReminder = scrollPercents * positionCurvesLength;
+    let targetReminder = scrollPercents * targetCurvesLength;
+    let positionCurvePercents = 0;
+    let targetCurvePercents = 0;
     
     for (let curveIndex = 0; curveIndex < cameraPositionCurves.length; curveIndex++) {
         const curveLength = cameraPositionCurves[curveIndex].getLength();
-        if(reminder > curveLength){
-            reminder -= curveLength;
+        if(positionReminder > curveLength){
+            positionReminder -= curveLength;
         }
         else{
-            currentCurveIndex = curveIndex;
-            curvePercents = reminder / curveLength;
+            currentPositionCurveIndex = curveIndex;
+            positionCurvePercents = positionReminder / curveLength;
             break;
         }
     }
-    const position = cameraPositionCurves[currentCurveIndex].getPoint(curvePercents);
+
+    for (let curveIndex = 0; curveIndex < cameraTargetCurves.length; curveIndex++) {
+        const curveLength = cameraTargetCurves[curveIndex].getLength();
+        if(targetReminder > curveLength){
+            targetReminder -= curveLength;
+        }
+        else{
+            currentTargetCurveIndex = curveIndex;
+            targetCurvePercents = targetReminder / curveLength;
+            break;
+        }
+    }
+
+    const position = cameraPositionCurves[currentPositionCurveIndex].getPoint(positionCurvePercents);
     camera.position.set(position.x, position.y, position.z);
-    controls.target = cameraTargetCurves[currentCurveIndex].getPoint(curvePercents);
+    controls.target = cameraTargetCurves[currentTargetCurveIndex].getPoint(targetCurvePercents);
 }
 
 document.body.onscroll = moveCamera;
