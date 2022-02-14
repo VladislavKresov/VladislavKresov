@@ -2,69 +2,189 @@ import './style.css'
 
 import * as THREE from 'three';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
-import { PointLightHelper } from 'three';
+import { MeshStandardMaterial, PlaneGeometry, Vector3 } from 'three';
+import { Object3D } from 'three';
+import { Mesh } from 'three';
+import { PerspectiveCamera } from 'three';
+import { OrthographicCamera } from 'three';
+import { MathUtils } from 'three';
 
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const camera = new THREE.PerspectiveCamera(47, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer({
-  canvas: document.querySelector('#background'),
+    canvas: document.querySelector('#background'),
 })
 
-renderer.setPixelRatio(window.devicePixelRatio);
-renderer.setSize(window.innerWidth, window.innerHeight);
-camera.position.set(-2, 5, 15);
-
-const wallFront = new THREE.Mesh( new THREE.PlaneGeometry( 60, 40 ), new THREE.MeshStandardMaterial( {color: 0xb0a18d} ) );
-wallFront.position.set(-20, 20, 0);
-scene.add( wallFront );
-
-const wallRight = new THREE.Mesh( new THREE.PlaneGeometry( 60, 40 ), new THREE.MeshStandardMaterial( {color: 0xb0a18d} ) );
-wallRight.position.set(10, 20, 30);
-wallRight.rotation.y = -Math.PI / 2;
-scene.add( wallRight );
-
-const floor = new THREE.Mesh( new THREE.PlaneGeometry( 60, 60 ), new THREE.MeshStandardMaterial( {color: 0x5a5a5a} ) );
-floor.position.set(-20, 0, 30);
-floor.rotation.x = -Math.PI / 2;
-scene.add( floor );
-
-const fbxLoader = new FBXLoader()
-fbxLoader.load(
-    'geometry/table.fbx',
-    (object) => {
-        object.scale.set(.01, .01, .01)
-        object.position.set(0, 5, 5)
-        scene.add(object)
-    },
-    (xhr) => {
-        console.log((xhr.loaded / xhr.total) * 100 + '% loaded')
-    },
-    (error) => {
-        console.log(error)
-    }
-)
-
-const pointLight = new THREE.PointLight(0xffffff);
-pointLight.position.set(-1, 6, 7);
-scene.add(pointLight);
-
-const lightHelper = new THREE.PointLightHelper(pointLight);
-scene.add(lightHelper);
 const controls = new OrbitControls(camera, renderer.domElement);
 
-window.addEventListener('resize', onWindowResize, false)
-function onWindowResize() {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
+// axes drawing
+// const axesHelper = new THREE.AxesHelper( 5 );
+// scene.add( axesHelper );
+
+const cameraPositionCurves = [
+    new THREE.QuadraticBezierCurve3(
+        new Vector3(-8.3124, 7.2668, -8.5381),
+        new Vector3(-8.3124, 7.2668, -10.5381),
+        new Vector3(-0.5914, 3.1524, -0.7245),
+    ),
+    new THREE.QuadraticBezierCurve3(
+        new Vector3(-0.5914, 3.1524, -0.7245),
+        new Vector3(0.9153, 3.1524, -0.7245),
+        new Vector3(0.9153, 4.0453, 0.9248),
+    ),
+    new THREE.QuadraticBezierCurve3(
+        new Vector3(0.9153, 4.0453, 0.9248),
+        new Vector3(0.4, 4.0453, 0.9248),
+        new Vector3(-0.1547, 3.8268, -0.2624),
+    ),
+    new THREE.QuadraticBezierCurve3(
+        new Vector3(-0.1547, 3.8268, -0.2624),
+        new Vector3(-0.1547, 3.8268, -0.2624),
+        new Vector3(-8.3124, 7.2668, -8.5381),
+        ),
+    ];
+    
+let positionCurvesLength = 0;
+
+for (let posCurve = 0; posCurve < cameraPositionCurves.length; posCurve++) {
+    const curve = cameraPositionCurves[posCurve];
+    positionCurvesLength += curve.getLength();
+    
+    // camera position path drawing
+    // const lineGeo = new THREE.BufferGeometry().setFromPoints(curve.getPoints(300));
+    // const lineMat = new THREE.LineBasicMaterial({color:0x00ff00});
+    // const line = new THREE.Line(lineGeo, lineMat);
+    // scene.add(line);
 }
+
+const cameraTargetCurves = [
+    new THREE.QuadraticBezierCurve3(
+        new Vector3(.5, 0, 1),
+        new Vector3(2.2, 0.6, 1.5),
+        new Vector3(3.9, 3, -1.2),
+    ),
+    new THREE.QuadraticBezierCurve3(
+        new Vector3(3.9, 3, -1.2),
+        new Vector3(3.8, 2.8, 1.27),
+        new Vector3(3.72, 2.8, 3.74),
+    ),
+    new THREE.QuadraticBezierCurve3(
+        new Vector3(3.72, 2.8, 3.74),
+        new Vector3(2, 2, 3.85),
+        new Vector3(-0.28, 2.45, 3.96),
+    ),
+    new THREE.QuadraticBezierCurve3(
+        new Vector3(-0.28, 2.45, 3.96),
+        new Vector3(0.11, 0, 2.48),
+        new Vector3(.5, 0, 1),
+    ),
+];
+
+let targetCurvesLength = 0;
+
+for (let posCurve = 0; posCurve < cameraTargetCurves.length; posCurve++) {
+    const curve = cameraTargetCurves[posCurve];
+    targetCurvesLength += curve.getLength();
+
+    // camera target Path drawing
+    // const lineGeo = new THREE.BufferGeometry().setFromPoints(curve.getPoints(300));
+    // const lineMat = new THREE.LineBasicMaterial({color:0xff0000});
+    // const line = new THREE.Line(lineGeo, lineMat);
+    // scene.add(line);
+}
+
+init();
+animate();
+
+function init(){
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.outputEncoding = THREE.sRGBEncoding;
+    renderer.physicallyCorrectLights = true;
+    renderer.shadowMap.width = 128;
+    renderer.shadowMap.height = 128;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFShadowMap;
+    renderer.setClearColor(0x000933, 1);
+
+    camera.position.set(cameraPositionCurves[0].v0.x, cameraPositionCurves[0].v0.y, cameraPositionCurves[0].v0.z);
+    controls.target = cameraTargetCurves[0].v0;
+    controls.enableRotate = false;
+    controls.enableZoom = false;
+    controls.enablePan = false;
+    controls.enableDamping = true;
+
+    LoadScene();
+
+    function LoadScene() {
+
+        const loader = new GLTFLoader();
+        loader.load(
+            'geometry/mywebsite.glb',
+            function(gltf) {
+                gltf.scene.traverse(function (child) {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = true;
+                    }
+                    if (child.isLight) {
+                        child.castShadow = true;
+                        child.receiveShadow = false;
+                        child.shadow.mapSize.width = 1024;
+                        child.shadow.mapSize.height = 1024;
+                        child.shadow.bias = 0;
+                        child.shadow.bias = -0.006;
+                    }
+                });
+                scene.add(gltf.scene);
+            }, function(progress) {
+                // console.log(progress);
+            }, function (error) {
+                console.error(error);
+        });
+    }
+
+    window.addEventListener('resize', onWindowResize, false)
+    function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+}
+
+function moveCamera(){
+    const scroll = document.body.getBoundingClientRect().top * -1;
+    const body = document.body;
+    const html = document.documentElement;
+    const height = Math.max( body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight );
+    const length = height - window.innerHeight;
+    const scrollPercents = scroll / length;
+    let currentCurveIndex = 0;
+    let reminder = scrollPercents * positionCurvesLength;
+    let curvePercents = 0;
+    
+    for (let curveIndex = 0; curveIndex < cameraPositionCurves.length; curveIndex++) {
+        const curveLength = cameraPositionCurves[curveIndex].getLength();
+        if(reminder > curveLength){
+            reminder -= curveLength;
+        }
+        else{
+            currentCurveIndex = curveIndex;
+            curvePercents = reminder / curveLength;
+            break;
+        }
+    }
+    const position = cameraPositionCurves[currentCurveIndex].getPoint(curvePercents);
+    camera.position.set(position.x, position.y, position.z);
+    controls.target = cameraTargetCurves[currentCurveIndex].getPoint(curvePercents);
+}
+
+document.body.onscroll = moveCamera;
 
 function animate(){
-  requestAnimationFrame(animate);
-  renderer.render(scene, camera);
-
-  controls.update();
+    requestAnimationFrame(animate);
+    controls.update();
+    renderer.render(scene, camera);
 }
-
-animate();
