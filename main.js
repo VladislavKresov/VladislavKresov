@@ -13,8 +13,15 @@ import { MathUtils } from 'three';
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(47, window.innerWidth / window.innerHeight, 0.1, 1000);
+let pixelRatio = window.devicePixelRatio
+let AA = true
+if (pixelRatio > 1) {
+  AA = false
+}
 const renderer = new THREE.WebGLRenderer({
     canvas: document.querySelector('#background'),
+    antialias: AA,
+    powerPreference: "high-performance",
 })
 
 const controls = new OrbitControls(camera, renderer.domElement);
@@ -119,6 +126,23 @@ function init(){
     LoadScene();
 
     function LoadScene() {
+        
+        function meshesLoaded(){
+            var loaderScreen = document.getElementById("loader-screen");
+            var fadeEffect = setInterval(function () {
+                if (!loaderScreen.style.opacity) {
+                    loaderScreen.style.opacity = 1;
+                }
+                if (loaderScreen.style.opacity > 0) {
+                    loaderScreen.style.opacity -= 0.1;
+                } else {
+                    clearInterval(fadeEffect);
+                }
+            }, 200);
+
+            window.scrollTo(0,0);
+            document.body.style.overflowY = "visible";
+        }
 
         const loader = new GLTFLoader();
         loader.load(
@@ -139,8 +163,12 @@ function init(){
                     }
                 });
                 scene.add(gltf.scene);
+                requestAnimationFrame(meshesLoaded);
             }, function(progress) {
-                // console.log(progress);
+                var percents = Math.round(progress.loaded / progress.total * 100);
+
+                var header = document.getElementById("progress-text");
+                header.textContent = percents.toString() + '%';
             }, function (error) {
                 console.error(error);
         });
