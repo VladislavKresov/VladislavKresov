@@ -3,6 +3,7 @@ import './style.css'
 import * as THREE from 'three';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { MeshStandardMaterial, PlaneGeometry, Vector3 } from 'three';
 import { Object3D } from 'three';
@@ -16,7 +17,7 @@ const camera = new THREE.PerspectiveCamera(47, window.innerWidth / window.innerH
 let pixelRatio = window.devicePixelRatio
 let AA = true
 if (pixelRatio > 1) {
-  AA = false
+    AA = false
 }
 const renderer = new THREE.WebGLRenderer({
     canvas: document.querySelector('#background'),
@@ -50,15 +51,15 @@ const cameraPositionCurves = [
         new Vector3(-0.1547, 3.8268, -0.2624),
         new Vector3(-0.1547, 3.8268, -0.2624),
         new Vector3(-8.3124, 7.2668, -8.5381),
-        ),
-    ];
-    
+    ),
+];
+
 let positionCurvesLength = 0;
 
 for (let posCurve = 0; posCurve < cameraPositionCurves.length; posCurve++) {
     const curve = cameraPositionCurves[posCurve];
     positionCurvesLength += curve.getLength();
-    
+
     // camera position path drawing
     // const lineGeo = new THREE.BufferGeometry().setFromPoints(curve.getPoints(300));
     // const lineMat = new THREE.LineBasicMaterial({color:0x00ff00});
@@ -105,7 +106,7 @@ for (let posCurve = 0; posCurve < cameraTargetCurves.length; posCurve++) {
 init();
 animate();
 
-function init(){
+function init() {
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.outputEncoding = THREE.sRGBEncoding;
@@ -114,7 +115,7 @@ function init(){
     renderer.shadowMap.height = 128;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFShadowMap;
-    renderer.setClearColor(0x000933, 1);
+    renderer.setClearColor(0x000000, 1);
 
     camera.position.set(cameraPositionCurves[0].v0.x, cameraPositionCurves[0].v0.y, cameraPositionCurves[0].v0.z);
     controls.target = cameraTargetCurves[0].v0;
@@ -126,8 +127,8 @@ function init(){
     LoadScene();
 
     function LoadScene() {
-        
-        function meshesLoaded(){
+
+        function meshesLoaded() {
             var loaderScreen = document.getElementById("loader-screen");
             var fadeEffect = setInterval(function () {
                 if (!loaderScreen.style.opacity) {
@@ -140,14 +141,18 @@ function init(){
                 }
             }, 200);
 
-            window.scrollTo(0,0);
+            window.scrollTo(0, 0);
             document.body.style.overflowY = "visible";
         }
+        
+        const dracoLoader = new DRACOLoader();
+        dracoLoader.setDecoderPath('node_modules/three/examples/js/libs/draco/gltf/');
 
         const loader = new GLTFLoader();
+        loader.setDRACOLoader(dracoLoader);
         loader.load(
-            'geometry/mywebsite.glb',
-            function(gltf) {
+            'geometry/room.gltf',
+            function (gltf) {
                 gltf.scene.traverse(function (child) {
                     if (child.isMesh) {
                         child.castShadow = true;
@@ -164,14 +169,42 @@ function init(){
                 });
                 scene.add(gltf.scene);
                 requestAnimationFrame(meshesLoaded);
-            }, function(progress) {
+            }, function (progress) {
                 var percents = Math.round(progress.loaded / progress.total * 100);
 
                 var header = document.getElementById("progress-text");
-                header.textContent = percents.toString() + '%';
+                header.textContent = percents + '%';
             }, function (error) {
                 console.error(error);
         });
+
+        // loader.load(
+        //     'geometry/mywebsite.glb',
+        //     function (gltf) {
+        //         gltf.scene.traverse(function (child) {
+        //             if (child.isMesh) {
+        //                 child.castShadow = true;
+        //                 child.receiveShadow = true;
+        //             }
+        //             if (child.isLight) {
+        //                 child.castShadow = true;
+        //                 child.receiveShadow = false;
+        //                 child.shadow.mapSize.width = 1024;
+        //                 child.shadow.mapSize.height = 1024;
+        //                 child.shadow.bias = 0;
+        //                 child.shadow.bias = -0.006;
+        //             }
+        //         });
+        //         scene.add(gltf.scene);
+        //         requestAnimationFrame(meshesLoaded);
+        //     }, function (progress) {
+        //         var percents = Math.round(progress.loaded / progress.total * 100);
+
+        //         var header = document.getElementById("progress-text");
+        //         header.textContent = percents + '%';
+        //     }, function (error) {
+        //         console.error(error);
+        //     });
     }
 
     window.addEventListener('resize', onWindowResize, false)
@@ -182,11 +215,11 @@ function init(){
     }
 }
 
-function moveCamera(){
+function moveCamera() {
     const scroll = document.body.getBoundingClientRect().top * -1;
     const body = document.body;
     const html = document.documentElement;
-    const height = Math.max( body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight );
+    const height = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
     const length = height - window.innerHeight;
     const scrollPercents = scroll / length;
     let currentPositionCurveIndex = 0;
@@ -195,13 +228,13 @@ function moveCamera(){
     let targetReminder = scrollPercents * targetCurvesLength;
     let positionCurvePercents = 0;
     let targetCurvePercents = 0;
-    
+
     for (let curveIndex = 0; curveIndex < cameraPositionCurves.length; curveIndex++) {
         const curveLength = cameraPositionCurves[curveIndex].getLength();
-        if(positionReminder > curveLength){
+        if (positionReminder > curveLength) {
             positionReminder -= curveLength;
         }
-        else{
+        else {
             currentPositionCurveIndex = curveIndex;
             positionCurvePercents = positionReminder / curveLength;
             break;
@@ -210,10 +243,10 @@ function moveCamera(){
 
     for (let curveIndex = 0; curveIndex < cameraTargetCurves.length; curveIndex++) {
         const curveLength = cameraTargetCurves[curveIndex].getLength();
-        if(targetReminder > curveLength){
+        if (targetReminder > curveLength) {
             targetReminder -= curveLength;
         }
-        else{
+        else {
             currentTargetCurveIndex = curveIndex;
             targetCurvePercents = targetReminder / curveLength;
             break;
@@ -227,7 +260,7 @@ function moveCamera(){
 
 document.body.onscroll = moveCamera;
 
-function animate(){
+function animate() {
     requestAnimationFrame(animate);
     controls.update();
     renderer.render(scene, camera);
