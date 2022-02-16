@@ -120,7 +120,7 @@ function init() {
             window.scrollTo(0, 0);
             document.body.style.overflowY = "visible";
         }
-        
+
         const dracoLoader = new DRACOLoader();
         dracoLoader.setDecoderPath('https://unpkg.com/three@0.127.0/examples/js/libs/draco/gltf/');
 
@@ -146,15 +146,14 @@ function init() {
                 scene.add(gltf.scene);
                 requestAnimationFrame(meshesLoaded);
             }, function (progress) {
-                var percents = Math.round(progress.loaded / progress.total * 100);
-                console.log(progress.loaded + '/' + progress.total);
-                console.log(progress);
-
-                var header = document.getElementById("progress-text");
-                header.textContent = percents + '%';
+                if (progress.total != 0) {
+                    var percents = Math.round(progress.loaded / progress.total * 100);
+                    var header = document.getElementById("progress-text");
+                    header.textContent = percents + '%';
+                }
             }, function (error) {
                 console.error(error);
-        });
+            });
     }
 
     window.addEventListener('resize', onWindowResize, false)
