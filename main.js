@@ -146,6 +146,8 @@ function init() {
                 requestAnimationFrame(meshesLoaded);
             }, function (progress) {
                 var percents = Math.round(progress.loaded / progress.total * 100);
+                console.log(progress.loaded + '/' + progress.total);
+                console.log(progress);
 
                 var header = document.getElementById("progress-text");
                 header.textContent = percents + '%';
