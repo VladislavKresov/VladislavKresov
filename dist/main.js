@@ -1,10 +1,8 @@
-// import 'style.css'
-
 import * as THREE from 'https://unpkg.com/three@0.127.0/build/three.module.js';
 import { GLTFLoader } from 'https://unpkg.com/three@0.127.0/examples/jsm/loaders/GLTFLoader'
 import { DRACOLoader } from 'https://unpkg.com/three@0.127.0/examples/jsm/loaders/DRACOLoader'
 import { OrbitControls } from 'https://unpkg.com/three@0.127.0/examples/jsm/controls/OrbitControls.js'
-import { Vector3 } from THREE;
+// import { Vector3 } from THREE;
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(47, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -23,24 +21,24 @@ const controls = new OrbitControls(camera, renderer.domElement);
 
 const cameraPositionCurves = [
     new THREE.QuadraticBezierCurve3(
-        new Vector3(-8.3124, 7.2668, -8.5381),
-        new Vector3(-8.3124, 7.2668, -10.5381),
-        new Vector3(-0.5914, 3.1524, -0.7245),
+        new THREE.Vector3(-8.3124, 7.2668, -8.5381),
+        new THREE.Vector3(-8.3124, 7.2668, -10.5381),
+        new THREE.Vector3(-0.5914, 3.1524, -0.7245),
     ),
     new THREE.QuadraticBezierCurve3(
-        new Vector3(-0.5914, 3.1524, -0.7245),
-        new Vector3(0.9153, 3.1524, -0.7245),
-        new Vector3(0.9153, 4.0453, 0.9248),
+        new THREE.Vector3(-0.5914, 3.1524, -0.7245),
+        new THREE.Vector3(0.9153, 3.1524, -0.7245),
+        new THREE.Vector3(0.9153, 4.0453, 0.9248),
     ),
     new THREE.QuadraticBezierCurve3(
-        new Vector3(0.9153, 4.0453, 0.9248),
-        new Vector3(0.4, 4.0453, 0.9248),
-        new Vector3(-0.1547, 3.8268, -0.2624),
+        new THREE.Vector3(0.9153, 4.0453, 0.9248),
+        new THREE.Vector3(0.4, 4.0453, 0.9248),
+        new THREE.Vector3(-0.1547, 3.8268, -0.2624),
     ),
     new THREE.QuadraticBezierCurve3(
-        new Vector3(-0.1547, 3.8268, -0.2624),
-        new Vector3(-0.1547, 3.8268, -0.2624),
-        new Vector3(-8.3124, 7.2668, -8.5381),
+        new THREE.Vector3(-0.1547, 3.8268, -0.2624),
+        new THREE.Vector3(-0.1547, 3.8268, -0.2624),
+        new THREE.Vector3(-8.3124, 7.2668, -8.5381),
     ),
 ];
 
@@ -53,24 +51,24 @@ for (let posCurve = 0; posCurve < cameraPositionCurves.length; posCurve++) {
 
 const cameraTargetCurves = [
     new THREE.QuadraticBezierCurve3(
-        new Vector3(.5, 0, 1),
-        new Vector3(2.2, 0.6, 1.5),
-        new Vector3(3.9, 3, -1.2),
+        new THREE.Vector3(.5, 0, 1),
+        new THREE.Vector3(2.2, 0.6, 1.5),
+        new THREE.Vector3(3.9, 3, -1.2),
     ),
     new THREE.QuadraticBezierCurve3(
-        new Vector3(3.9, 3, -1.2),
-        new Vector3(3.8, 2.8, 1.27),
-        new Vector3(3.72, 2.8, 3.74),
+        new THREE.Vector3(3.9, 3, -1.2),
+        new THREE.Vector3(3.8, 2.8, 1.27),
+        new THREE.Vector3(3.72, 2.8, 3.74),
     ),
     new THREE.QuadraticBezierCurve3(
-        new Vector3(3.72, 2.8, 3.74),
-        new Vector3(2, 2, 3.85),
-        new Vector3(-0.28, 2.45, 3.96),
+        new THREE.Vector3(3.72, 2.8, 3.74),
+        new THREE.Vector3(2, 2, 3.85),
+        new THREE.Vector3(-0.28, 2.45, 3.96),
     ),
     new THREE.QuadraticBezierCurve3(
-        new Vector3(-0.28, 2.45, 3.96),
-        new Vector3(0.11, 0, 2.48),
-        new Vector3(.5, 0, 1),
+        new THREE.Vector3(-0.28, 2.45, 3.96),
+        new THREE.Vector3(0.11, 0, 2.48),
+        new THREE.Vector3(.5, 0, 1),
     ),
 ];
 
@@ -129,7 +127,7 @@ function init() {
         const loader = new GLTFLoader();
         loader.setDRACOLoader(dracoLoader);
         loader.load(
-            'geometry/room.gltf',
+            './geometry/room.gltf',
             function (gltf) {
                 gltf.scene.traverse(function (child) {
                     if (child.isMesh) {
