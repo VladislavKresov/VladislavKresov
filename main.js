@@ -112,9 +112,10 @@ function init() {
                 if (loaderScreen.style.opacity > 0) {
                     loaderScreen.style.opacity -= 0.1;
                 } else {
+                    loaderScreen.style.visibility = 'collapse';
                     clearInterval(fadeEffect);
                 }
-            }, 200);
+            }, 50);
 
             window.scrollTo(0, 0);
             document.body.style.overflowY = "visible";
