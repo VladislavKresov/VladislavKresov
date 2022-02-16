@@ -1,16 +1,10 @@
 import './style.css'
 
-import * as THREE from 'three';
-import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
-import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader'
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
-import { MeshStandardMaterial, PlaneGeometry, Vector3 } from 'three';
-import { Object3D } from 'three';
-import { Mesh } from 'three';
-import { PerspectiveCamera } from 'three';
-import { OrthographicCamera } from 'three';
-import { MathUtils } from 'three';
+import * as THREE from 'https://unpkg.com/three@0.127.0/build/three.module.js';
+import { GLTFLoader } from 'https://unpkg.com/three@0.127.0/examples/jsm/loaders/GLTFLoader'
+import { DRACOLoader } from 'https://unpkg.com/three@0.127.0/examples/jsm/loaders/DRACOLoader'
+import { OrbitControls } from 'https://unpkg.com/three@0.127.0/examples/jsm/controls/OrbitControls.js'
+import { Vector3 } from THREE;
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(47, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -26,10 +20,6 @@ const renderer = new THREE.WebGLRenderer({
 })
 
 const controls = new OrbitControls(camera, renderer.domElement);
-
-// axes drawing
-// const axesHelper = new THREE.AxesHelper( 5 );
-// scene.add( axesHelper );
 
 const cameraPositionCurves = [
     new THREE.QuadraticBezierCurve3(
@@ -59,12 +49,6 @@ let positionCurvesLength = 0;
 for (let posCurve = 0; posCurve < cameraPositionCurves.length; posCurve++) {
     const curve = cameraPositionCurves[posCurve];
     positionCurvesLength += curve.getLength();
-
-    // camera position path drawing
-    // const lineGeo = new THREE.BufferGeometry().setFromPoints(curve.getPoints(300));
-    // const lineMat = new THREE.LineBasicMaterial({color:0x00ff00});
-    // const line = new THREE.Line(lineGeo, lineMat);
-    // scene.add(line);
 }
 
 const cameraTargetCurves = [
@@ -95,12 +79,6 @@ let targetCurvesLength = 0;
 for (let posCurve = 0; posCurve < cameraTargetCurves.length; posCurve++) {
     const curve = cameraTargetCurves[posCurve];
     targetCurvesLength += curve.getLength();
-
-    // camera target Path drawing
-    // const lineGeo = new THREE.BufferGeometry().setFromPoints(curve.getPoints(300));
-    // const lineMat = new THREE.LineBasicMaterial({color:0xff0000});
-    // const line = new THREE.Line(lineGeo, lineMat);
-    // scene.add(line);
 }
 
 init();
@@ -146,7 +124,7 @@ function init() {
         }
         
         const dracoLoader = new DRACOLoader();
-        dracoLoader.setDecoderPath('node_modules/three/examples/js/libs/draco/gltf/');
+        dracoLoader.setDecoderPath('https://unpkg.com/three@0.127.0/examples/js/libs/draco/gltf/');
 
         const loader = new GLTFLoader();
         loader.setDRACOLoader(dracoLoader);
@@ -177,34 +155,6 @@ function init() {
             }, function (error) {
                 console.error(error);
         });
-
-        // loader.load(
-        //     'geometry/mywebsite.glb',
-        //     function (gltf) {
-        //         gltf.scene.traverse(function (child) {
-        //             if (child.isMesh) {
-        //                 child.castShadow = true;
-        //                 child.receiveShadow = true;
-        //             }
-        //             if (child.isLight) {
-        //                 child.castShadow = true;
-        //                 child.receiveShadow = false;
-        //                 child.shadow.mapSize.width = 1024;
-        //                 child.shadow.mapSize.height = 1024;
-        //                 child.shadow.bias = 0;
-        //                 child.shadow.bias = -0.006;
-        //             }
-        //         });
-        //         scene.add(gltf.scene);
-        //         requestAnimationFrame(meshesLoaded);
-        //     }, function (progress) {
-        //         var percents = Math.round(progress.loaded / progress.total * 100);
-
-        //         var header = document.getElementById("progress-text");
-        //         header.textContent = percents + '%';
-        //     }, function (error) {
-        //         console.error(error);
-        //     });
     }
 
     window.addEventListener('resize', onWindowResize, false)
